@@ -10,6 +10,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       leading: IconButton(
         icon: Icon(Icons.menu),
+        color: Color(0xFFFFD700),
         onPressed: () {
           scaffoldKey.currentState?.openDrawer();
         },
@@ -17,18 +18,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         children: [
           Image.asset(
-            '../../images/UTFPR_logo.png', // Certifique-se de que o caminho está correto
-            width: 90,
-            height: 60,
-          ),
-          const SizedBox(width: 30),
-          const Text(
-            'Reserva Ai! - UTFPR',
-            style: TextStyle(color: Colors.black),
+            '../../images/logo_reservai.png', // Certifique-se de que o caminho está correto
+            width: 200,
+            height: 120,
           ),
         ],
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white.withOpacity(0.6),
       iconTheme: const IconThemeData(
         color: Colors.black,
       ),

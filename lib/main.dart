@@ -3,6 +3,7 @@ import 'components/side-bar.dart';
 import 'components/bottom-bar.dart';
 import 'components/custom-app-bar.dart';
 import 'screens/home-page.dart';
+import 'screens/user-page.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,19 +34,35 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  final List<Widget> _pages = [
+    HomePage(),
+    UserPage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: CustomAppBar(scaffoldKey: _scaffoldKey),
-      drawer: SideBar(),
-      body: _currentIndex == 0
-          ? HomePage()
-          : Center(child: Text('Perfil')),
-      bottomNavigationBar: BottomBar(
-        currentIndex: _currentIndex,
-        onTabTapped: _onTabTapped,
-      ),
+     return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('../images/utfpr_background.png'), // Substitua pelo caminho correto
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        Scaffold(
+          key: _scaffoldKey,
+          appBar: CustomAppBar(scaffoldKey: _scaffoldKey),
+          drawer: SideBar(),
+          body: _pages[_currentIndex],
+          bottomNavigationBar: BottomBar(
+            currentIndex: _currentIndex,
+            onTabTapped: _onTabTapped,
+          ),
+          backgroundColor: Colors.transparent, // Deixe o Scaffold transparente
+        ),
+      ],
     );
   }
 }

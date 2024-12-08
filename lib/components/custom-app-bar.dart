@@ -10,7 +10,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       leading: IconButton(
         icon: Icon(Icons.menu),
-        color: Color(0xFFFFD700),
+        color: Colors.black,
         onPressed: () {
           scaffoldKey.currentState?.openDrawer();
         },

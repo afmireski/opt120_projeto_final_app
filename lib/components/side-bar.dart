@@ -9,18 +9,28 @@ class SideBar extends StatelessWidget {
         children: [
           // Conteúdo principal da barra lateral
           Column(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
+           children: [
+              Container(
+                color: Color(0xFFFFD700),
+                width: double.infinity, // Preenche toda a largura
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'ReservAi',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
+              ),
+              Divider(
+                color: Colors.grey, // Linha cinza como separador
+                thickness: 1, // Espessura da linha
+                height: 1, // Remover espaço vertical extra
               ),
               ListTile(
                 leading: Icon(Icons.meeting_room_rounded),
@@ -61,8 +71,7 @@ class SideBar extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () {
-                // TODO: Implementar ação de logout
-                Navigator.pop(context); // Fecha o menu lateral
+                Navigator.pushNamed(context, '/login');
               },
             ),
           ),

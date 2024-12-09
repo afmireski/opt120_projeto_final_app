@@ -46,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('../images/utfpr_background.png'), // Substitua pelo caminho correto
+              image: AssetImage('../../images/utfpr_background.PNG'), // Substitua pelo caminho correto
               fit: BoxFit.cover,
             ),
           ),

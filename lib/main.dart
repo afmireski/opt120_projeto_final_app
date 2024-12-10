@@ -41,12 +41,13 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-     return Stack(
+    return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('../../images/utfpr_background.PNG'), // Substitua pelo caminho correto
+              image: AssetImage(
+                  'images/utfpr_background.PNG'), // Substitua pelo caminho correto
               fit: BoxFit.cover,
             ),
           ),

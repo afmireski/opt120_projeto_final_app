@@ -18,7 +18,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         children: [
           Image.asset(
-            '../../images/logo_reservai.png', // Certifique-se de que o caminho está correto
+            'images/logo_reservai.png', // Certifique-se de que o caminho está correto
             width: 200,
             height: 120,
           ),

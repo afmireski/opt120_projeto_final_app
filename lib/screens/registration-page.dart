@@ -98,6 +98,12 @@ class RegistrationPage extends StatelessWidget {
                             onPressed: () => onSubmit(context),
                             child: Text('Registrar'),
                           ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/login');
+                              },
+                              child: Text('Já possui uma conta? Entrar'),
+                            ),
                         ],
                       ),
                     ),

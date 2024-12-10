@@ -21,60 +21,75 @@ class LoginPage extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('../images/utfpr_background.png'),
+                image: AssetImage('../../images/utfpr_background.PNG'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Logo acima do formulário
+                    Image.asset(
+                      '../../images/logo_reservai.png', // Certifique-se de que o caminho está correto
+                      width: 200,
+                      height: 120,
+                    ),
+                    SizedBox(height: 20),
+                    // Container com o formulário de login
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Form(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            TextField(
+                              controller: senhaController,
+                              decoration: InputDecoration(
+                                labelText: 'Senha',
+                                border: OutlineInputBorder(),
+                              ),
+                              obscureText: true,
+                            ),
+                            SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () => onLoginPressed(context),
+                              child: Text('Login'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              child: Text('Não tem uma conta? Cadastre-se'),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
-                ),
-                child: Form(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      TextField(
-                        controller: senhaController,
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                      ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () => onLoginPressed(context),
-                        child: Text('Login'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/register');
-                        },
-                        child: Text('Não tem uma conta? Cadastre-se'),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),

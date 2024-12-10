@@ -21,70 +21,85 @@ class RegistrationPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fundo com imagem
+          // Fundo com image
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('../images/utfpr_background.png'),
+                image: AssetImage('../images/utfpr_background.PNG'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextField(
-                      controller: name,
-                      decoration: InputDecoration(
-                        labelText: 'Nome',
-                        border: OutlineInputBorder(),
-                      ),
+                    // Logo acima do formulário
+                    Image.asset(
+                      '../images/logo_reservai.png', // Certifique-se de que o caminho está correto
+                      width: 200,
+                      height: 120,
                     ),
                     SizedBox(height: 20),
-                    TextField(
-                      controller: email,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
+                    // Container com o formulário de registro
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    TextField(
-                      controller: ra,
-                      decoration: InputDecoration(
-                        labelText: 'RA',
-                        border: OutlineInputBorder(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: name,
+                            decoration: InputDecoration(
+                              labelText: 'Nome',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          TextField(
+                            controller: email,
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          TextField(
+                            controller: ra,
+                            decoration: InputDecoration(
+                              labelText: 'RA',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          TextField(
+                            controller: password,
+                            decoration: InputDecoration(
+                              labelText: 'Senha',
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: true,
+                          ),
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () => onSubmit(context),
+                            child: Text('Registrar'),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    TextField(
-                      controller: password,
-                      decoration: InputDecoration(
-                        labelText: 'Senha',
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => onSubmit(context),
-                      child: Text('Registrar'),
                     ),
                   ],
                 ),

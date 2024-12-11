@@ -1,19 +1,58 @@
 import 'package:flutter/material.dart';
+import '../services/registration-service.dart';
+import '../config/config.dart';
 
-class RegistrationPage extends StatelessWidget {
+class RegistrationPage extends StatefulWidget {
+  @override
+  _RegistrationPageState createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends State<RegistrationPage> {
   // CONTROLLERS //
-  final TextEditingController name = TextEditingController();
-  final TextEditingController email = TextEditingController();
-  final TextEditingController ra = TextEditingController();
-  final TextEditingController password = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController raController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  void onSubmit(BuildContext context) {
-    print('Name: ${name.text}');
-    print('Email: ${email.text}');
-    print('RA: ${ra.text}');
-    print('Senha: ${password.text}');
-    
-    Navigator.pushReplacementNamed(context, '/login');
+  final RegistrationService registrationService = RegistrationService(Config.baseUrl);
+  bool isLoading = false;
+  String? selectedRole; // "STUDENT" ou "SERVANT"
+
+  void onRegisterPressed() async {
+    if (selectedRole == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selecione o tipo de usuário.')),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await registrationService.register(
+        name: nameController.text,
+        email: emailController.text,
+        ra: raController.text,
+        password: passwordController.text,
+        role: selectedRole,
+      );
+
+      setState(() {
+        isLoading = false;
+      });
+
+      Navigator.pushReplacementNamed(context, '/login');
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
   @override
@@ -21,7 +60,6 @@ class RegistrationPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fundo com image
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -37,14 +75,12 @@ class RegistrationPage extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo acima do formulário
                     Image.asset(
-                      '../images/logo_reservai.png', // Certifique-se de que o caminho está correto
+                      '../images/logo_reservai.png',
                       width: 200,
                       height: 120,
                     ),
                     SizedBox(height: 20),
-                    // Container com o formulário de registro
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                       decoration: BoxDecoration(
@@ -62,7 +98,7 @@ class RegistrationPage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextField(
-                            controller: name,
+                            controller: nameController,
                             decoration: InputDecoration(
                               labelText: 'Nome',
                               border: OutlineInputBorder(),
@@ -70,7 +106,7 @@ class RegistrationPage extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           TextField(
-                            controller: email,
+                            controller: emailController,
                             decoration: InputDecoration(
                               labelText: 'Email',
                               border: OutlineInputBorder(),
@@ -78,7 +114,7 @@ class RegistrationPage extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           TextField(
-                            controller: ra,
+                            controller: raController,
                             decoration: InputDecoration(
                               labelText: 'RA',
                               border: OutlineInputBorder(),
@@ -86,7 +122,7 @@ class RegistrationPage extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           TextField(
-                            controller: password,
+                            controller: passwordController,
                             decoration: InputDecoration(
                               labelText: 'Senha',
                               border: OutlineInputBorder(),
@@ -94,16 +130,49 @@ class RegistrationPage extends StatelessWidget {
                             obscureText: true,
                           ),
                           SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => onSubmit(context),
-                            child: Text('Registrar'),
+                          // Radio Buttons para selecionar o tipo de usuário
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                title: Text('Aluno'),
+                                leading: Radio<String>(
+                                  value: 'STUDENT',
+                                  groupValue: selectedRole,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedRole = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                              ListTile(
+                                title: Text('Servidor'),
+                                leading: Radio<String>(
+                                  value: 'SERVANT',
+                                  groupValue: selectedRole,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedRole = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
+                          SizedBox(height: 20),
+                          isLoading
+                              ? CircularProgressIndicator()
+                              : ElevatedButton(
+                                  onPressed: onRegisterPressed,
+                                  child: Text('Registrar'),
+                                ),
                           TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/login');
-                              },
-                              child: Text('Já possui uma conta? Entrar'),
-                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: Text('Já possui uma conta? Entrar'),
+                          ),
                         ],
                       ),
                     ),

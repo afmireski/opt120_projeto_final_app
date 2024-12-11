@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../stores/user-store.dart';
 
 class SideBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Organiza os itens
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Conteúdo principal da barra lateral
           Column(
            children: [
               Container(
                 color: Color(0xFFFFD700),
-                width: double.infinity, // Preenche toda a largura
+                width: double.infinity, 
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   children: [
@@ -28,9 +29,9 @@ class SideBar extends StatelessWidget {
                 ),
               ),
               Divider(
-                color: Colors.grey, // Linha cinza como separador
-                thickness: 1, // Espessura da linha
-                height: 1, // Remover espaço vertical extra
+                color: Colors.grey,
+                thickness: 1, 
+                height: 1,
               ),
               ListTile(
                 leading: Icon(Icons.meeting_room_rounded),
@@ -71,7 +72,33 @@ class SideBar extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () {
-                Navigator.pushNamed(context, '/login');
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Confirmar saída'),
+                      content: const Text('Tem certeza que deseja desconectar?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancelar'),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Fecha o modal
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Sim'),
+                          onPressed: () {
+                            // Limpa as informações do usuário e token no UserStore
+                            final userStore = Provider.of<UserStore>(context, listen: false);
+                            userStore.clearUser(); // Limpa o usuário e token
+
+                            Navigator.of(context).pushReplacementNamed('/login'); // Redireciona para a tela de login
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ),

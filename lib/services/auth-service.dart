@@ -15,8 +15,8 @@ class AuthService {
 
     // Define o corpo da requisição dinamicamente
     final body = email != null
-        ? {'email': email, 'senha': senha}
-        : {'ra': ra, 'senha': senha};
+        ? {'email': email, 'password': senha}
+        : {'ra': ra, 'password': senha};
 
     final response = await http.post(
       url,

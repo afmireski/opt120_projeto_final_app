@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import '../config/config.dart';
+import '../services/registration-service.dart';
+import '../stores/user-store.dart';
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserStore>(context).currentUser;
+
     return Center(
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -19,15 +24,19 @@ class UserPage extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: const SizedBox(
-                width: 200,
-                height: 200,
-                child: Icon(
-                  Icons.person,
-                  size: 150,
-                ),
+              child: const Icon(
+                Icons.person,
+                size: 100, // Ícone menor
               ),
             ),
+            const SizedBox(height: 20),
+            if (user != null) ...[
+              Text('Nome: ${user.nome}', style: TextStyle(fontSize: 16)),
+              Text('Email: ${user.email}', style: TextStyle(fontSize: 16)),
+              Text('RA: ${user.ra}', style: TextStyle(fontSize: 16)),
+              Text('Role: ${user.role}', style: TextStyle(fontSize: 16)),
+            ] else
+              const Text('Usuário não encontrado.'),
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -62,45 +71,69 @@ class ChangeProfileForm extends StatefulWidget {
 
 class _ChangeProfileFormState extends State<ChangeProfileForm> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _raController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Informe uma senha';
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = Provider.of<UserStore>(context, listen: false).currentUser;
+
+    if (user != null) {
+      _nameController.text = user.nome;
+      _emailController.text = user.email;
+      _raController.text = user.ra;
     }
-    if (value.length < 5) {
-      return 'Senha muito curta';
-    }
-    return null;
   }
 
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Informe um nome';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Informe um email';
-    }
-    if (!RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-        .hasMatch(value)) {
-      return 'Informe um email válido';
-    }
-    return null;
-  }
-
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perfil atualizado com sucesso.')),
-      );
-      Navigator.of(context).pop();
+      setState(() {
+        isLoading = true;
+      });
+
+      try {
+        final user = Provider.of<UserStore>(context, listen: false).currentUser;
+        final registrationService = RegistrationService(Config.baseUrl);
+
+        if (user != null) {
+          await registrationService.alter(
+            name: _nameController.text,
+            email: _emailController.text,
+            ra: _raController.text,
+            password: _passwordController.text,
+            role: user.role, // Sempre envia o role atual do usuário
+          );
+
+          // Atualiza o UserStore
+          Provider.of<UserStore>(context, listen: false).setUser(
+            User(
+              nome: _nameController.text,
+              email: _emailController.text,
+              ra: _raController.text,
+              role: user.role, // Role permanece o mesmo
+            ),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Perfil atualizado com sucesso.')),
+          );
+
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao atualizar: $e')),
+        );
+      }
     }
   }
 
@@ -120,7 +153,9 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
                 decoration: const InputDecoration(
                   labelText: 'Nome',
                 ),
-                validator: _validateName,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Informe um nome'
+                    : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -129,7 +164,16 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
                   labelText: 'Email',
                 ),
                 keyboardType: TextInputType.emailAddress,
-                validator: _validateEmail,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Informe um email'
+                    : null,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _raController,
+                decoration: const InputDecoration(
+                  labelText: 'RA',
+                ),
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -138,34 +182,48 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
                 decoration: const InputDecoration(
                   labelText: 'Senha',
                 ),
-                validator: _validatePassword,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Informe uma senha'
+                    : null,
               ),
             ],
           ),
         ),
       ),
       actions: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+      SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancelar'),
+              ),
             ),
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+            const SizedBox(width: 10), // Espaçamento entre os botões
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: isLoading ? null : _submitForm,
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Salvar'),
+              ),
             ),
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.white,
-          ),
-          onPressed: _submitForm,
-          child: const Text('Salvar'),
+          ],
         ),
       ],
     );

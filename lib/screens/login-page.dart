@@ -24,21 +24,24 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final String loginInput = loginController.text;
 
-      // Determina se o login é email ou RA
-      final bool isEmail = loginInput.contains('@');
-      final loginData = await authService.login(
-        email: isEmail ? loginInput : null,
-        ra: isEmail ? null : loginInput,
-        senha: senhaController.text,
-      );
+    // Determina se o login é email ou RA
+    final bool isEmail = loginInput.contains('@');
+    final loginData = await authService.login(
+      email: isEmail ? loginInput : null,
+      ra: isEmail ? null : loginInput,
+      senha: senhaController.text,
+    );
 
-      // Buscando informações completas do usuário pelo ID
-      final userData = await authService.fetchUserById(loginData['id']);
-      final user = User.fromJson(userData);
+    // Armazena o token no UserStore
+    final userStore = UserStore();
+    userStore.setToken(loginData['token']);
 
-      // Atualizando o UserStore
-      final userStore = Provider.of<UserStore>(context, listen: false);
-      userStore.setUser(user);
+    // Buscando informações completas do usuário pelo ID
+    final userData = await authService.fetchUserById(loginData['id']);
+    final user = User.fromJson(userData);
+
+    // Atualizando o UserStore com o usuário
+    userStore.setUser(user);
 
       setState(() {
         isLoading = false;
@@ -61,7 +64,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Fundo com imagem
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -77,14 +79,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo acima do formulário
                     Image.asset(
                       '../images/logo_reservai.png',
                       width: 200,
                       height: 120,
                     ),
                     SizedBox(height: 20),
-                    // Container com o formulário de login
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 30),

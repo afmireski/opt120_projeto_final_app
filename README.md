@@ -15,9 +15,17 @@ As tecnologias utilizadas nessa aplicação foram: **Flutter - Dart**
 - Licença
 - Autor
 
-## Instalação
+## Uso
   
-- **Configuração do ambiente**
+- **Instalação das dependências*
+```bash
+flutter pub get
+```
+
+- **Iniciando o projeto*
+```bash
+flutter run -d web-server
+```
 
 ## Licença
 O projeto utiliza a Licença de Software Livre MIT.

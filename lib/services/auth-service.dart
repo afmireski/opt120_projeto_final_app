@@ -25,7 +25,7 @@ class AuthService {
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200  || response.statusCode == 201) {
       return jsonDecode(response.body); // Retorna os dados do login
     } else {
       throw Exception('Erro ao realizar login: ${response.body}');
@@ -43,7 +43,7 @@ class AuthService {
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200  || response.statusCode == 201) {
       return jsonDecode(response.body); // Retorna as informações do usuário
     } else {
       throw Exception('Erro ao buscar usuário: ${response.body}');

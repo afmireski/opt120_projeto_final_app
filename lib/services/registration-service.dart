@@ -37,7 +37,7 @@ class RegistrationService {
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200  || response.statusCode == 201 ) {
       return jsonDecode(response.body); // Retorna os dados da criação da conta
     } else {
       throw Exception('Erro ao realizar o registro: ${response.body}');
@@ -79,7 +79,7 @@ class RegistrationService {
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200  || response.statusCode == 201) {
       return jsonDecode(response.body); // Retorna os dados da alteração do usuário
     } else {
       throw Exception('Erro ao alterar o usuário: ${response.body}');

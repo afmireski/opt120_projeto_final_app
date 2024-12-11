@@ -1,26 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../stores/user-store.dart';
 
 class SideBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Organiza os itens
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Conteúdo principal da barra lateral
           Column(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
+           children: [
+              Container(
+                color: Color(0xFFFFD700),
+                width: double.infinity, 
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'ReservAi',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
+              ),
+              Divider(
+                color: Colors.grey,
+                thickness: 1, 
+                height: 1,
               ),
               ListTile(
                 leading: Icon(Icons.meeting_room_rounded),
@@ -61,8 +72,33 @@ class SideBar extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () {
-                // TODO: Implementar ação de logout
-                Navigator.pop(context); // Fecha o menu lateral
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Confirmar saída'),
+                      content: const Text('Tem certeza que deseja desconectar?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancelar'),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Fecha o modal
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Sim'),
+                          onPressed: () {
+                            // Limpa as informações do usuário e token no UserStore
+                            final userStore = Provider.of<UserStore>(context, listen: false);
+                            userStore.clearUser(); // Limpa o usuário e token
+
+                            Navigator.of(context).pushReplacementNamed('/login'); // Redireciona para a tela de login
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ),

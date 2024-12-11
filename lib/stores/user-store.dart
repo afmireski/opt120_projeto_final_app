@@ -1,80 +1,54 @@
-//------------------------------------------------
-// REQUISIÇÕES E DADOS DO USUÁRIO PARA O SISTEMA
-//------------------------------------------------
+import 'package:flutter/material.dart';
 
+class User {
+  final String nome;
+  final String email;
+  final String ra;
+  final String role;
 
-//!! EXEMPLOS DE FETCH DATAS E REQUISIÇÕES !! - REESTRUTURAR DE ACORDO COM O BACK
+  User({
+    required this.nome,
+    required this.email,
+    required this.ra,
+    required this.role,
+  });
 
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../models/user.dart';
-
-class UserStore {
-  final String apiUrl = '#######';
-
-  Future<List<User>> fetchUsers() async {
-    final url = Uri.parse('$apiUrl/users');
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((json) => User.fromJson(json)).toList();
-      } else {
-        print('Erro ao carregar users. Código: ${response.statusCode}');
-        return [];
-      }
-    } catch (e) {
-      print('Erro ao conectar-se ao backend: $e');
-      return [];
-    }
-  }
-
-  Future<User?> fetchUserById(int id) async {
-    final url = Uri.parse('$apiUrl/user/$id');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return User.fromJson(data);
-    } else {
-      print('Erro ao buscar user. Código: ${response.statusCode}');
-      return null;
-    }
-  }
-
-   Future<void> addUser(User user) async {
-    final url = Uri.parse('$apiUrl/user');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(user.toJson()),
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      nome: json['nome'],
+      email: json['email'],
+      ra: json['ra'],
+      role: json['role'],
     );
+  }
+}
 
-    if (response.statusCode != 201) {
-      print('Erro ao criar user! Código: ${response.statusCode}');
-      print('Resposta: ${response.body}');
-    } else {
-      print('user criado com sucesso!');
-    }
+class UserStore with ChangeNotifier {
+  static final UserStore _instance = UserStore._internal();
+
+  User? _currentUser;
+  String? _token;
+
+  UserStore._internal();
+
+  factory UserStore() => _instance;
+
+  User? get currentUser => _currentUser;
+  String? get token => _token;
+
+  void setUser(User user) {
+    _currentUser = user;
+    notifyListeners();
   }
 
-  Future<void> updateUser(User user) async {
-    final url = Uri.parse('$apiUrl/user/${user.id}');
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(user.toJson()),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Erro ao atualizar user');
-    }
+  void setToken(String token) {
+    _token = token;
+    notifyListeners();
   }
 
-  Future<void> deleteUser(int id) async {
-    final url = Uri.parse('$apiUrl/user/$id');
-    final response = await http.delete(url);
-
-    if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Erro ao excluir user');
-    }
+  void clearUser() {
+    _currentUser = null;
+    _token = null;
+    notifyListeners();
   }
 }

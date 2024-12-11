@@ -38,7 +38,7 @@ class RegistrationService {
     );
 
     if (response.statusCode == 200  || response.statusCode == 201 ) {
-      return jsonDecode(response.body); // Retorna os dados da criação da conta
+      return;
     } else {
       throw Exception('Erro ao realizar o registro: ${response.body}');
     }

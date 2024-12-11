@@ -38,17 +38,14 @@ class UserStore with ChangeNotifier {
 
   void setUser(User user) {
     _currentUser = user;
-    notifyListeners();
   }
 
   void setToken(String token) {
     _token = token;
-    notifyListeners();
   }
 
   void clearUser() {
     _currentUser = null;
     _token = null;
-    notifyListeners();
   }
 }

@@ -74,7 +74,7 @@ class RegistrationService {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Adiciona o token de sessão
+        'Authorization': '$token', // Adiciona o token de sessão
       },
       body: jsonEncode(body),
     );

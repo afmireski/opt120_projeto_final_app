@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../stores/user-store.dart';
 
 class AuthService {
   final String baseUrl;
@@ -32,10 +33,14 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> fetchUserById(int id) async {
+    final String? token = UserStore().token;
     final url = Uri.parse('$baseUrl/api/users/$id');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$token', // Adiciona o token de sessão
+      },
     );
 
     if (response.statusCode == 200) {

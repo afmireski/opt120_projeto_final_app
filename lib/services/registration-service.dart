@@ -44,7 +44,7 @@ class RegistrationService {
     }
   }
 
-  Future<Map<String, dynamic>> alter({
+  Future<void> alter({
     String? name,
     String? email,
     String? ra,
@@ -80,7 +80,7 @@ class RegistrationService {
     );
 
     if (response.statusCode == 200  || response.statusCode == 201) {
-      return jsonDecode(response.body); // Retorna os dados da alteração do usuário
+      return; // Retorna os dados da alteração do usuário
     } else {
       throw Exception('Erro ao alterar o usuário: ${response.body}');
     }

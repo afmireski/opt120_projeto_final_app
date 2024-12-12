@@ -21,5 +21,12 @@
             "flutterMode": "debug",
             "deviceId": "emulator-5554"
         },
+        {
+            "name": "Flutter Linux",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "linux"
+        },
     ]
 }

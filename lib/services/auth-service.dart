@@ -35,6 +35,11 @@ class AuthService {
   Future<Map<String, dynamic>> fetchUserById(int id) async {
     final String? token = UserStore().token;
     final url = Uri.parse('$baseUrl/api/users/$id');
+    print(url);
+    print({
+        'Content-Type': 'application/json',
+        'Authorization': '$token', // Adiciona o token de sessão
+      });
     final response = await http.get(
       url,
       headers: {
@@ -44,6 +49,7 @@ class AuthService {
     );
 
     if (response.statusCode == 200  || response.statusCode == 201) {
+      print("Foi");
       return jsonDecode(response.body); // Retorna as informações do usuário
     } else {
       throw Exception('Erro ao buscar usuário: ${response.body}');

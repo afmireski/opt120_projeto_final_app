@@ -86,7 +86,7 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
     if (user != null) {
       _nameController.text = user.nome;
       _emailController.text = user.email;
-      _raController.text = user.ra;
+      _raController.text = user.ra ?? '';
     }
   }
 

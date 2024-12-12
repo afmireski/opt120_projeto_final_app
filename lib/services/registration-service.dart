@@ -8,7 +8,7 @@ class RegistrationService {
 
   RegistrationService(this.baseUrl);
 
-  Future<Map<String, dynamic>> register({
+  Future<void> register({
     String? name,
     String? email,
     String? ra,
@@ -70,7 +70,7 @@ class RegistrationService {
     };
 
     // Envia a requisição com o token nos headers
-    final response = await http.post(
+    final response = await http.patch(
       url,
       headers: {
         'Content-Type': 'application/json',

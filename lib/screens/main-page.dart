@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('../../images/utfpr_background.PNG'),
+              image: AssetImage('images/utfpr_background.png'),
               fit: BoxFit.cover,
             ),
           ),

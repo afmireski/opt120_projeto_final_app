@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class User {
   final String nome;
   final String email;
-  final String ra;
+  final String? ra;
   final String role;
 
   User({
@@ -15,7 +15,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      nome: json['nome'],
+      nome: json['name'],
       email: json['email'],
       ra: json['ra'],
       role: json['role'],

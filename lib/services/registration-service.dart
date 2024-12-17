@@ -8,7 +8,7 @@ class RegistrationService {
 
   RegistrationService(this.baseUrl);
 
-  Future<Map<String, dynamic>> register({
+  Future<void> register({
     String? name,
     String? email,
     String? ra,
@@ -37,14 +37,14 @@ class RegistrationService {
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body); // Retorna os dados da criação da conta
+    if (response.statusCode == 200  || response.statusCode == 201 ) {
+      return;
     } else {
       throw Exception('Erro ao realizar o registro: ${response.body}');
     }
   }
 
-  Future<Map<String, dynamic>> alter({
+  Future<void> alter({
     String? name,
     String? email,
     String? ra,
@@ -70,17 +70,17 @@ class RegistrationService {
     };
 
     // Envia a requisição com o token nos headers
-    final response = await http.post(
+    final response = await http.patch(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Adiciona o token de sessão
+        'Authorization': '$token', // Adiciona o token de sessão
       },
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body); // Retorna os dados da alteração do usuário
+    if (response.statusCode == 200  || response.statusCode == 201) {
+      return; // Retorna os dados da alteração do usuário
     } else {
       throw Exception('Erro ao alterar o usuário: ${response.body}');
     }

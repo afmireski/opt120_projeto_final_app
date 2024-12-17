@@ -86,7 +86,7 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
     if (user != null) {
       _nameController.text = user.nome;
       _emailController.text = user.email;
-      _raController.text = user.ra;
+      _raController.text = user.ra ?? '';
     }
   }
 
@@ -104,7 +104,6 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
           await registrationService.alter(
             name: _nameController.text,
             email: _emailController.text,
-            ra: _raController.text,
             password: _passwordController.text,
             role: user.role, // Sempre envia o role atual do usuário
           );
@@ -123,7 +122,7 @@ class _ChangeProfileFormState extends State<ChangeProfileForm> {
             const SnackBar(content: Text('Perfil atualizado com sucesso.')),
           );
 
-          Navigator.of(context).pop();
+          Navigator.of(context).pushReplacementNamed('/home'); 
         }
       } catch (e) {
         setState(() {

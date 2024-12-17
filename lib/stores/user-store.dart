@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class User {
   final String nome;
   final String email;
-  final String ra;
+  final String? ra;
   final String role;
 
   User({
@@ -15,7 +15,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      nome: json['nome'],
+      nome: json['name'],
       email: json['email'],
       ra: json['ra'],
       role: json['role'],
@@ -38,17 +38,14 @@ class UserStore with ChangeNotifier {
 
   void setUser(User user) {
     _currentUser = user;
-    notifyListeners();
   }
 
   void setToken(String token) {
     _token = token;
-    notifyListeners();
   }
 
   void clearUser() {
     _currentUser = null;
     _token = null;
-    notifyListeners();
   }
 }

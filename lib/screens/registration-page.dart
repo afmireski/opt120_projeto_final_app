@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/registration-service.dart';
+import 'package:provider/provider.dart';
 import '../config/config.dart';
+import '../stores/user-store.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -63,7 +65,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('../images/utfpr_background.PNG'),
+                image: AssetImage('images/utfpr_background.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -76,7 +78,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset(
-                      '../images/logo_reservai.png',
+                      'images/logo_reservai.png',
                       width: 200,
                       height: 120,
                     ),
@@ -169,8 +171,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/login');
-                            },
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Usuário criado com sucesso'),
+                                  content: const Text('Você será redirecionado para a tela de login.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        // Limpa as informações do usuário e token no UserStore
+                                        final userStore = Provider.of<UserStore>(context, listen: false);
+                                        userStore.clearUser(); // Limpa o usuário e token
+
+                                        Navigator.of(context).pushReplacementNamed('/login'); // Redireciona para a tela de login
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                             child: Text('Já possui uma conta? Entrar'),
                           ),
                         ],

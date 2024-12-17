@@ -38,9 +38,11 @@ class _LoginPageState extends State<LoginPage> {
 
     // Buscando informações completas do usuário pelo ID
     final userData = await authService.fetchUserById(loginData['id']);
+    print(userData);
     final user = User.fromJson(userData);
 
     // Atualizando o UserStore com o usuário
+    print("! $user");
     userStore.setUser(user);
 
       setState(() {
@@ -67,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('../images/utfpr_background.PNG'),
+                image: AssetImage('images/utfpr_background.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -80,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset(
-                      '../images/logo_reservai.png',
+                      'images/logo_reservai.png',
                       width: 200,
                       height: 120,
                     ),

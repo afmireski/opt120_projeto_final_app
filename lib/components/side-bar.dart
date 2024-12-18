@@ -3,10 +3,13 @@ import 'package:provider/provider.dart';
 import '../stores/user-store.dart';
 
 class SideBar extends StatelessWidget {
+  final Function(int)? onNavigate; // Função opcional para navegação
+
+  const SideBar({Key? key, this.onNavigate}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserStore>(context).currentUser;
-
     final isStudent = user?.role == 'STUDENT';
 
     return Drawer(
@@ -15,15 +18,16 @@ class SideBar extends StatelessWidget {
         children: [
           Column(
             children: [
+              // Cabeçalho
               Container(
                 color: const Color(0xFFFFD700),
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       'ReservAi',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -37,53 +41,55 @@ class SideBar extends StatelessWidget {
                 thickness: 1,
                 height: 1,
               ),
+              // Menu de navegação
               ListTile(
                 leading: const Icon(Icons.home),
                 title: const Text('Home Page'),
                 onTap: () {
-                  Navigator.pushNamed(context, '/home');
+                  onNavigate?.call(0);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.view_list_rounded),
                 title: const Text('Salas Cadastradas'),
                 onTap: () {
-                  Navigator.pushNamed(context, '/list-rooms');
+                  onNavigate?.call(1); 
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.add_business_rounded),
                 title: const Text('Criação de Sala'),
-                onTap: isStudent ? null : () {
-                  // TODO: Adicionar navegação
+                onTap: () {
+                  onNavigate?.call(2);
                 },
-                enabled: !isStudent, 
+                enabled: !isStudent,
               ),
               ListTile(
                 leading: const Icon(Icons.approval_rounded),
                 title: const Text('Aprovar Reservas'),
                 onTap: isStudent ? null : () {
-                  // TODO: Adicionar navegação
+                  // TODO: Adicionar navegação futura
                 },
-                enabled: !isStudent, 
+                enabled: !isStudent,
               ),
               ListTile(
                 leading: const Icon(Icons.add_task_rounded),
                 title: const Text('Criação de Reserva'),
                 onTap: isStudent ? null : () {
-                  // TODO: Adicionar navegação
+                  // TODO: Adicionar navegação futura
                 },
-                enabled: !isStudent, 
+                enabled: !isStudent,
               ),
               ListTile(
                 leading: const Icon(Icons.room_preferences_rounded),
                 title: const Text('Reservar Sala'),
-                onTap: isStudent ? null : () {
-                  // TODO: Adicionar navegação
+                onTap: () {
+                  // TODO: Adicionar navegação futura
                 },
               ),
             ],
           ),
+          // Botão de Sair
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ListTile(

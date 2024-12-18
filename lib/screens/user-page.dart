@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../config/config.dart';
 import '../services/registration-service.dart';
 import '../stores/user-store.dart';
+import '../components/background-container.dart';
+
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
 
@@ -10,52 +12,54 @@ class UserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<UserStore>(context).currentUser;
 
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: const Icon(
-                Icons.person,
-                size: 100, // Ícone menor
-              ),
-            ),
-            const SizedBox(height: 20),
-            if (user != null) ...[
-              Text('Nome: ${user.nome}', style: TextStyle(fontSize: 16)),
-              Text('Email: ${user.email}', style: TextStyle(fontSize: 16)),
-              Text('RA: ${user.ra}', style: TextStyle(fontSize: 16)),
-              Text('Role: ${user.role}', style: TextStyle(fontSize: 16)),
-            ] else
-              const Text('Usuário não encontrado.'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+    return BackgroundContainer(
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: const Icon(
+                  Icons.person,
+                  size: 100, // Ícone menor
                 ),
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
               ),
-              onPressed: () async {
-                await showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) => const ChangeProfileForm(),
-                );
-              },
-              child: const Text('Editar perfil'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              if (user != null) ...[
+                Text('Nome: ${user.nome}', style: const TextStyle(fontSize: 16)),
+                Text('Email: ${user.email}', style: const TextStyle(fontSize: 16)),
+                Text('RA: ${user.ra}', style: const TextStyle(fontSize: 16)),
+                Text('Role: ${user.role}', style: const TextStyle(fontSize: 16)),
+              ] else
+                const Text('Usuário não encontrado.'),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async {
+                  await showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) => const ChangeProfileForm(),
+                  );
+                },
+                child: const Text('Editar perfil'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -11,12 +11,12 @@ class BottomBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTabTapped,
-      selectedItemColor: Colors.yellow, // Cor do item selecionado
-      unselectedItemColor: Colors.grey, // Cor do item não selecionado
+      selectedItemColor: Colors.yellow,
+      unselectedItemColor: Colors.grey,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment_rounded),
-          label: 'Minhas Reservas',
+          label: 'Home',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle_rounded),

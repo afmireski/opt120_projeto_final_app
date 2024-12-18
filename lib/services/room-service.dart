@@ -11,16 +11,16 @@ class RoomService {
   Future<Room> createRoom({
     required String name,
     required Map<String, dynamic> informations,
-    required DateTime openingHour,
-    required DateTime closingHour,
+    required String openingHour, // Alterado para String
+    required String closingHour, // Alterado para String
   }) async {
     final url = Uri.parse('$baseUrl/rooms/new');
 
     final body = {
       'name': name,
       'informations': informations,
-      'opening_hour': openingHour.toIso8601String(),
-      'closing_hour': closingHour.toIso8601String(),
+      'opening_hour': openingHour, // Envia no formato "HH:mm"
+      'closing_hour': closingHour, // Envia no formato "HH:mm"
     };
 
     final response = await http.post(
@@ -41,16 +41,16 @@ class RoomService {
     required int id,
     String? name,
     Map<String, dynamic>? informations,
-    DateTime? openingHour,
-    DateTime? closingHour,
+    String? openingHour, // Alterado para String
+    String? closingHour, // Alterado para String
   }) async {
     final url = Uri.parse('$baseUrl/rooms/$id/update');
 
     final body = {
       if (name != null) 'name': name,
       if (informations != null) 'informations': informations,
-      if (openingHour != null) 'opening_hour': openingHour.toIso8601String(),
-      if (closingHour != null) 'closing_hour': closingHour.toIso8601String(),
+      if (openingHour != null) 'opening_hour': openingHour, // Envia como String
+      if (closingHour != null) 'closing_hour': closingHour, // Envia como String
     };
 
     final response = await http.patch(

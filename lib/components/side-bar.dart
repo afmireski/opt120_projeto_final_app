@@ -5,21 +5,25 @@ import '../stores/user-store.dart';
 class SideBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserStore>(context).currentUser;
+
+    final isStudent = user?.role == 'STUDENT';
+
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
-           children: [
+            children: [
               Container(
-                color: Color(0xFFFFD700),
-                width: double.infinity, 
+                color: const Color(0xFFFFD700),
+                width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   children: [
                     Text(
                       'ReservAi',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -28,36 +32,53 @@ class SideBar extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(
+              const Divider(
                 color: Colors.grey,
-                thickness: 1, 
+                thickness: 1,
                 height: 1,
               ),
               ListTile(
-                leading: Icon(Icons.meeting_room_rounded),
-                title: Text('Reservar Sala'),
+                leading: const Icon(Icons.home),
+                title: const Text('Home Page'),
                 onTap: () {
-                  // TODO: Adicionar navegação
+                  Navigator.pushNamed(context, '/home');
                 },
               ),
               ListTile(
-                leading: Icon(Icons.approval_rounded),
-                title: Text('Aprovar Reservas'),
+                leading: const Icon(Icons.view_list_rounded),
+                title: const Text('Salas Cadastradas'),
                 onTap: () {
-                  // TODO: Adicionar navegação
+                  Navigator.pushNamed(context, '/list-rooms');
                 },
               ),
               ListTile(
-                leading: Icon(Icons.add_business_rounded),
-                title: Text('Criação de Sala'),
-                onTap: () {
+                leading: const Icon(Icons.add_business_rounded),
+                title: const Text('Criação de Sala'),
+                onTap: isStudent ? null : () {
                   // TODO: Adicionar navegação
                 },
+                enabled: !isStudent, 
               ),
               ListTile(
-                leading: Icon(Icons.add_task_rounded),
-                title: Text('Criação de Reserva'),
-                onTap: () {
+                leading: const Icon(Icons.approval_rounded),
+                title: const Text('Aprovar Reservas'),
+                onTap: isStudent ? null : () {
+                  // TODO: Adicionar navegação
+                },
+                enabled: !isStudent, 
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_task_rounded),
+                title: const Text('Criação de Reserva'),
+                onTap: isStudent ? null : () {
+                  // TODO: Adicionar navegação
+                },
+                enabled: !isStudent, 
+              ),
+              ListTile(
+                leading: const Icon(Icons.room_preferences_rounded),
+                title: const Text('Reservar Sala'),
+                onTap: isStudent ? null : () {
                   // TODO: Adicionar navegação
                 },
               ),
@@ -66,8 +87,8 @@ class SideBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ListTile(
-              leading: Icon(Icons.exit_to_app_rounded, color: Colors.red),
-              title: Text(
+              leading: const Icon(Icons.exit_to_app_rounded, color: Colors.red),
+              title: const Text(
                 'Sair',
                 style: TextStyle(color: Colors.red),
               ),

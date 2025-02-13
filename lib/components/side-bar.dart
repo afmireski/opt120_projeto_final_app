@@ -26,7 +26,7 @@ class SideBar extends StatelessWidget {
                 child: Row(
                   children: [
                     const Text(
-                      'ReservAi',
+                      'UTFPR - CM || ReservAi',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -56,30 +56,15 @@ class SideBar extends StatelessWidget {
                   onNavigate?.call(1); 
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.add_business_rounded),
-                title: const Text('Criação de Sala'),
-                onTap: () {
-                  onNavigate?.call(2);
-                },
-                enabled: !isStudent,
-              ),
-              ListTile(
-                leading: const Icon(Icons.approval_rounded),
-                title: const Text('Aprovar Reservas'),
-                onTap: isStudent ? null : () {
-                  // TODO: Adicionar navegação futura
-                },
-                enabled: !isStudent,
-              ),
-              ListTile(
-                leading: const Icon(Icons.add_task_rounded),
-                title: const Text('Criação de Reserva'),
-                onTap: isStudent ? null : () {
-                  // TODO: Adicionar navegação futura
-                },
-                enabled: !isStudent,
-              ),
+              if (!isStudent) ...[
+                ListTile(
+                  leading: const Icon(Icons.approval_rounded),
+                  title: const Text('Aprovar Reservas'),
+                  onTap: () {
+                    // TODO: Adicionar navegação futura
+                  },
+                ),
+              ],
               ListTile(
                 leading: const Icon(Icons.room_preferences_rounded),
                 title: const Text('Reservar Sala'),

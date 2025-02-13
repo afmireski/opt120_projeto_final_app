@@ -32,12 +32,12 @@ class _CreateRoomPageState extends State<CreateRooms> {
     if (widget.room != null) {
       isEditMode = true;
       _nameController.text = widget.room!.name;
-      _instrumentController.text = widget.room!.informations['instrumentos'] ?? '';
+      _instrumentController.text = widget.room!.informations['equipamentos'] ?? '';
       _openingHourController.text = widget.room!.opening_hour;
       _closingHourController.text = widget.room!.closing_hour;
 
       // Extraímos os instrumentos da sala existente para preencher a lista
-      _instruments = widget.room!.informations['instrumentos']?.split(', ') ?? [];
+      _instruments = widget.room!.informations['equipamentos']?.split(', ') ?? [];
     }
   }
 
@@ -49,12 +49,12 @@ class _CreateRoomPageState extends State<CreateRooms> {
 
       try {
         String formatHour(String hour) {
-            if (!hour.contains(':')) {
-                return hour + ":00"; // Adiciona os segundos
-            }
-            final parts = hour.split(':');
-            // Garante que sempre tenha 2 dígitos nas horas e minutos e 00 segundos
-            return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}:00';
+          if (!hour.contains(':')) {
+            return hour + ":00"; // Adiciona os segundos
+          }
+          final parts = hour.split(':');
+          // Garante que sempre tenha 2 dígitos nas horas e minutos e 00 segundos
+          return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}:00';
         }
 
         final roomService = RoomService(Config.baseUrl);
@@ -62,36 +62,31 @@ class _CreateRoomPageState extends State<CreateRooms> {
         String openingHourFormatted = formatHour(_openingHourController.text);
         String closingHourFormatted = formatHour(_closingHourController.text);
 
-        print(_nameController.text);
-        print({'instrumentos': _instruments.join(', ')});
-        print(openingHourFormatted);
-        print(closingHourFormatted);
-
         // Se estiver em modo de edição, fazemos um update, senão criamos uma nova sala
         if (isEditMode) {
-        await roomService.updateRoom(
+          await roomService.updateRoom(
             id: widget.room!.id,
             name: _nameController.text,
-            informations: {'instrumentos': _instruments.join(', ')},
+            informations: {'equipamentos': _instruments.join(', ')},
             openingHour: openingHourFormatted,
             closingHour: closingHourFormatted,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Sala atualizada com sucesso!')),
-        );
+          );
         } else {
-        await roomService.createRoom(
+          await roomService.createRoom(
             name: _nameController.text,
-            informations: {'instrumentos': _instruments.join(', ')},
+            informations: {'equipamentos': _instruments.join(', ')},
             openingHour: openingHourFormatted,
             closingHour: closingHourFormatted,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Sala criada com sucesso!')),
-        );
+          );
         }
 
-        Navigator.of(context).pop(); // Retorna para a tela anterior
+        Navigator.of(context).pushReplacementNamed('/home');
       } catch (e) {
         setState(() {
           isLoading = false;
@@ -112,24 +107,29 @@ class _CreateRoomPageState extends State<CreateRooms> {
   }
 
   void _goToHomePage() {
-    Navigator.of(context).pop(); // Navega de volta à página inicial
+    Navigator.of(context).pop(); // Navega de volta à página anterior
   }
 
   @override
   Widget build(BuildContext context) {
     return BackgroundContainer(
-        child: Scaffold(
-        appBar: isEditMode
-            ? AppBar(
-                actions: [
-                    IconButton(
-                    icon: Icon(Icons.arrow_forward),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back), // Ícone de seta para voltar
+            onPressed: _goToHomePage, // Navega de volta à página anterior
+          ),
+          title: Text(isEditMode ? 'Editar Sala' : 'Cadastrar Nova Sala'),
+          actions: isEditMode
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.save),
                     onPressed: _submitForm,
                     tooltip: 'Atualizar Sala',
-                    ),
-                ],
-                )
-            : null,  // Se não estiver em modo de edição, a AppBar não será renderizada
+                  ),
+                ]
+              : null, // Se não estiver em modo de edição, não exibe ações
+        ),
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
@@ -146,19 +146,9 @@ class _CreateRoomPageState extends State<CreateRooms> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
-                        child: Text(
-                          isEditMode ? 'Editar Sala' : 'Cadastrar Nova Sala',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
                       Text(
                         'Preencha as informações para ${isEditMode ? 'editar' : 'criar'} a sala:',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -174,7 +164,7 @@ class _CreateRoomPageState extends State<CreateRooms> {
                       TextFormField(
                         controller: _instrumentController,
                         decoration: const InputDecoration(
-                          labelText: 'Adicionar Instrumentos',
+                          labelText: 'Adicionar Equipamentos',
                           border: OutlineInputBorder(),
                           hintText: 'Digite e pressione Enter',
                         ),

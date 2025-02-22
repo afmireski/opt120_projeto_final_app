@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../components/side-bar.dart';
-import '../components/bottom-bar.dart';
 import '../components/custom-app-bar.dart';
-import 'home-page.dart';
-import 'user-page.dart';
+import 'home-with-bottom-bar.dart'; // Página que inclui o BottomBar
+import 'room/list-room.dart'; // Importa a página de salas cadastradas
+import 'room/create-room.dart'; // Importa a página de salas cadastradas
 
 class MainScreen extends StatefulWidget {
   @override
@@ -14,21 +14,25 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
+  // Lista de páginas controladas pelo SideBar
   final List<Widget> _pages = [
-    HomePage(),
-    UserPage(),
+    HomeWithBottomBar(),
+    ListRooms(), 
+    CreateRooms(), 
   ];
 
-  void _onTabTapped(int index) {
+  void _navigateToPage(int index) {
     setState(() {
       _currentIndex = index;
     });
+    Navigator.pop(context); // Fecha o drawer
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        // Background do aplicativo
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -40,13 +44,10 @@ class _MainScreenState extends State<MainScreen> {
         Scaffold(
           key: _scaffoldKey,
           appBar: CustomAppBar(scaffoldKey: _scaffoldKey),
-          drawer: SideBar(),
-          body: _pages[_currentIndex],
-          bottomNavigationBar: BottomBar(
-            currentIndex: _currentIndex,
-            onTabTapped: _onTabTapped,
+          drawer: SideBar(
+            onNavigate: _navigateToPage,
           ),
-          backgroundColor: Colors.transparent,
+          body: _pages[_currentIndex], // Renderiza a página correspondente
         ),
       ],
     );

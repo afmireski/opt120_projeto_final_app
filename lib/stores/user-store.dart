@@ -21,6 +21,30 @@ class User {
       role: json['role'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': nome,
+      'email': email,
+      'ra': ra,
+      'role': role,
+    };
+  }
+
+  /// Método copyWith para criar uma nova instância com valores alterados
+  User copyWith({
+    String? nome,
+    String? email,
+    String? ra,
+    String? role,
+  }) {
+    return User(
+      nome: nome ?? this.nome,
+      email: email ?? this.email,
+      ra: ra ?? this.ra,
+      role: role ?? this.role,
+    );
+  }
 }
 
 class UserStore with ChangeNotifier {

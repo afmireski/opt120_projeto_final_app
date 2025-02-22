@@ -3,22 +3,30 @@ import 'package:provider/provider.dart';
 import '../stores/user-store.dart';
 
 class SideBar extends StatelessWidget {
+  final Function(int)? onNavigate; // Função opcional para navegação
+
+  const SideBar({Key? key, this.onNavigate}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserStore>(context).currentUser;
+    final isStudent = user?.role == 'STUDENT';
+
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
-           children: [
+            children: [
+              // Cabeçalho
               Container(
-                color: Color(0xFFFFD700),
-                width: double.infinity, 
+                color: const Color(0xFFFFD700),
+                width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   children: [
-                    Text(
-                      'ReservAi',
+                    const Text(
+                      'UTFPR - CM || ReservAi',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -28,46 +36,50 @@ class SideBar extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(
+              const Divider(
                 color: Colors.grey,
-                thickness: 1, 
+                thickness: 1,
                 height: 1,
               ),
+              // Menu de navegação
               ListTile(
-                leading: Icon(Icons.meeting_room_rounded),
-                title: Text('Reservar Sala'),
+                leading: const Icon(Icons.home),
+                title: const Text('Home Page'),
                 onTap: () {
-                  // TODO: Adicionar navegação
+                  onNavigate?.call(0);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.approval_rounded),
-                title: Text('Aprovar Reservas'),
+                leading: const Icon(Icons.view_list_rounded),
+                title: const Text('Salas Cadastradas'),
                 onTap: () {
-                  // TODO: Adicionar navegação
+                  onNavigate?.call(1); 
                 },
               ),
+              if (!isStudent) ...[
+                ListTile(
+                  leading: const Icon(Icons.approval_rounded),
+                  title: const Text('Aprovar Reservas'),
+                  onTap: () {
+                    // TODO: Adicionar navegação futura
+                  },
+                ),
+              ],
               ListTile(
-                leading: Icon(Icons.add_business_rounded),
-                title: Text('Criação de Sala'),
+                leading: const Icon(Icons.room_preferences_rounded),
+                title: const Text('Reservar Sala'),
                 onTap: () {
-                  // TODO: Adicionar navegação
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.add_task_rounded),
-                title: Text('Criação de Reserva'),
-                onTap: () {
-                  // TODO: Adicionar navegação
+                  // TODO: Adicionar navegação futura
                 },
               ),
             ],
           ),
+          // Botão de Sair
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ListTile(
-              leading: Icon(Icons.exit_to_app_rounded, color: Colors.red),
-              title: Text(
+              leading: const Icon(Icons.exit_to_app_rounded, color: Colors.red),
+              title: const Text(
                 'Sair',
                 style: TextStyle(color: Colors.red),
               ),

@@ -24,9 +24,9 @@ class RegistrationService {
 
     // Define o corpo da requisição dinamicamente
     final body = {
-      'name' : name,
+      'name': name,
       'email': email,
-      if (ra != null) 'ra': ra,
+      if (ra != null && ra.isNotEmpty) 'ra': ra, // Inclui 'ra' somente se não for null ou vazio
       'password': password,
       'role': role,
     };
@@ -37,19 +37,20 @@ class RegistrationService {
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200  || response.statusCode == 201 ) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return;
     } else {
       throw Exception('Erro ao realizar o registro: ${response.body}');
     }
   }
 
+
   Future<void> alter({
     String? name,
     String? email,
     String? ra,
     required String password,
-    String? role,
+    String? newPassword,
   }) async {
     final url = Uri.parse('$baseUrl/api/users/alter-user');
 
@@ -61,13 +62,11 @@ class RegistrationService {
     }
 
     // Define o corpo da requisição dinamicamente
-    final body = {
+    final body = jsonEncode({  
       'name': name,
       'email': email,
-      if (ra != null) 'ra': ra,
-      'password': password,
-      'role': role,
-    };
+      'password': newPassword ?? password,
+    });
 
     // Envia a requisição com o token nos headers
     final response = await http.patch(
@@ -76,10 +75,13 @@ class RegistrationService {
         'Content-Type': 'application/json',
         'Authorization': '$token', // Adiciona o token de sessão
       },
-      body: jsonEncode(body),
+      body: body, // Envia diretamente o corpo já codificado
     );
 
-    if (response.statusCode == 200  || response.statusCode == 201) {
+    print('Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
       return; // Retorna os dados da alteração do usuário
     } else {
       throw Exception('Erro ao alterar o usuário: ${response.body}');

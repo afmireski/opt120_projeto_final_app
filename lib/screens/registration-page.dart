@@ -10,20 +10,20 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  // CONTROLLERS //
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController raController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   final RegistrationService registrationService = RegistrationService(Config.baseUrl);
   bool isLoading = false;
-  String? selectedRole; // "STUDENT" ou "SERVANT"
+  String selectedRole = 'STUDENT';
 
   void onRegisterPressed() async {
-    if (selectedRole == null) {
+    if (passwordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selecione o tipo de usuário.')),
+        SnackBar(content: Text('As senhas não correspondem.')),
       );
       return;
     }
@@ -36,7 +36,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       await registrationService.register(
         name: nameController.text,
         email: emailController.text,
-        ra: raController.text,
+        ra: selectedRole == 'STUDENT' ? raController.text : "",
         password: passwordController.text,
         role: selectedRole,
       );
@@ -45,7 +45,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
         isLoading = false;
       });
 
-      Navigator.pushReplacementNamed(context, '/login');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Usuário criado com sucesso'),
+            content: const Text('Você será redirecionado para a tela de login.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  final userStore = Provider.of<UserStore>(context, listen: false);
+                  userStore.clearUser();
+                  Navigator.of(context).pushReplacementNamed('/login');
+                },
+              ),
+            ],
+          );
+        },
+      );
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -83,6 +101,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       height: 120,
                     ),
                     SizedBox(height: 20),
+                    ToggleButtons(
+                      borderRadius: BorderRadius.circular(10), // Borda arredondada
+                      fillColor: Colors.white, // Fundo branco quando selecionado
+                      borderColor: Colors.grey, // Cor da borda
+                      selectedBorderColor: const Color.fromARGB(255, 93, 42, 160), // Cor da borda quando selecionado
+                      selectedColor: const Color.fromARGB(255, 93, 42, 160), // Cor do texto quando selecionado
+                      color: Colors.black, // Cor do texto padrão
+                      isSelected: [selectedRole == 'STUDENT', selectedRole == 'SERVANT'],
+                      onPressed: (index) {
+                        setState(() {
+                          selectedRole = index == 0 ? 'STUDENT' : 'SERVANT';
+                        });
+                      },
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          child: Text('Aluno'),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          child: Text('Servidor'),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                       decoration: BoxDecoration(
@@ -96,107 +139,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                         ],
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Nome',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          TextField(
-                            controller: emailController,
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          TextField(
-                            controller: raController,
-                            decoration: InputDecoration(
-                              labelText: 'RA',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          TextField(
-                            controller: passwordController,
-                            decoration: InputDecoration(
-                              labelText: 'Senha',
-                              border: OutlineInputBorder(),
-                            ),
-                            obscureText: true,
-                          ),
-                          SizedBox(height: 20),
-                          // Radio Buttons para selecionar o tipo de usuário
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListTile(
-                                title: Text('Aluno'),
-                                leading: Radio<String>(
-                                  value: 'STUDENT',
-                                  groupValue: selectedRole,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedRole = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                              ListTile(
-                                title: Text('Servidor'),
-                                leading: Radio<String>(
-                                  value: 'SERVANT',
-                                  groupValue: selectedRole,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedRole = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          isLoading
-                              ? CircularProgressIndicator()
-                              : ElevatedButton(
-                                  onPressed: onRegisterPressed,
-                                  child: Text('Registrar'),
-                                ),
-                          TextButton(
-                            onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Usuário criado com sucesso'),
-                                  content: const Text('Você será redirecionado para a tela de login.'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () {
-                                        // Limpa as informações do usuário e token no UserStore
-                                        final userStore = Provider.of<UserStore>(context, listen: false);
-                                        userStore.clearUser(); // Limpa o usuário e token
-
-                                        Navigator.of(context).pushReplacementNamed('/login'); // Redireciona para a tela de login
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                            child: Text('Já possui uma conta? Entrar'),
-                          ),
-                        ],
-                      ),
+                      child: selectedRole == 'STUDENT' ? buildStudentForm() : buildServantForm(),
                     ),
                   ],
                 ),
@@ -204,6 +147,71 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildStudentForm() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        buildTextField(nameController, 'Nome'),
+        buildTextField(emailController, 'Email'),
+        buildTextField(raController, 'RA'),
+        buildTextField(passwordController, 'Senha', obscureText: true),
+        buildTextField(confirmPasswordController, 'Confirmar Senha', obscureText: true),
+        SizedBox(height: 20),
+        isLoading
+            ? CircularProgressIndicator()
+            : ElevatedButton(
+                onPressed: onRegisterPressed,
+                child: Text('Registrar'),
+              ),
+        TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacementNamed('/login');
+                      },
+                      child: Text('Já tem uma conta? Voltar ao login'),
+                    ),
+      ],
+    );
+  }
+
+  Widget buildServantForm() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        buildTextField(nameController, 'Nome'),
+        buildTextField(emailController, 'Email'),
+        buildTextField(passwordController, 'Senha', obscureText: true),
+        buildTextField(confirmPasswordController, 'Confirmar Senha', obscureText: true),
+        SizedBox(height: 20),
+        isLoading
+            ? CircularProgressIndicator()
+            : ElevatedButton(
+                onPressed: onRegisterPressed,
+                child: Text('Registrar'),
+              ),
+              TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacementNamed('/login');
+                      },
+                      child: Text('Já tem uma conta? Voltar ao login'),
+                    ),
+      ],
+    );
+  }
+
+  Widget buildTextField(TextEditingController controller, String label, {bool obscureText = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+        ),
+        obscureText: obscureText,
       ),
     );
   }

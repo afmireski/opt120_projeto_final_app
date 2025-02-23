@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../components/side-bar.dart';
 import '../components/custom-app-bar.dart';
 import 'home-with-bottom-bar.dart'; // Página que inclui o BottomBar
+import 'booking-requests.dart'; // Página que inclui o BottomBar
 import 'room/list-room.dart'; // Importa a página de salas cadastradas
 import 'room/create-room.dart'; // Importa a página de salas cadastradas
 
@@ -19,6 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeWithBottomBar(),
     ListRooms(), 
     CreateRooms(), 
+    BookingRequests(),
   ];
 
   void _navigateToPage(int index) {

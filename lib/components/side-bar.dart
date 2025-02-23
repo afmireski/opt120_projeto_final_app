@@ -61,7 +61,7 @@ class SideBar extends StatelessWidget {
                   leading: const Icon(Icons.approval_rounded),
                   title: const Text('Aprovar Reservas'),
                   onTap: () {
-                    // TODO: Adicionar navegação futura
+                    onNavigate?.call(3);
                   },
                 ),
               ],

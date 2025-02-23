@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:produto_front/book/page.dart';
 import 'package:provider/provider.dart';
 import 'stores/user-store.dart';
 import 'screens/login-page.dart';
@@ -14,7 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserStore()), // Provedor para o estado do usuário
+        ChangeNotifierProvider(
+            create: (_) => UserStore()), // Provedor para o estado do usuário
       ],
       child: MaterialApp(
         title: 'Reserva Ai!',
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginPage(),
           '/register': (context) => RegistrationPage(),
           '/home': (context) => MainScreen(),
+          '/book': (context) => BookScreen(),
         },
       ),
     );

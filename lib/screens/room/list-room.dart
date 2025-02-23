@@ -18,7 +18,7 @@ class _ListRoomsState extends State<ListRooms> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  final RoomService _roomService = RoomService('http://localhost:3000'); // Substitua pela URL base do seu serviço
+  final RoomService _roomService = RoomService('http://localhost:3000'); 
 
   @override
   void initState() {

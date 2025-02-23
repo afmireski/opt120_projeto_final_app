@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../services/booking-service.dart';
+import '../../models/booking.dart';
+import '../../components/background-container.dart';
 
 class BookingRequests extends StatefulWidget {
   const BookingRequests({super.key});
@@ -8,37 +11,37 @@ class BookingRequests extends StatefulWidget {
 }
 
 class _BookingRequestsState extends State<BookingRequests> {
-  List<Map<String, dynamic>> _mockBookings = [
-    {
-      "id": 1,
-      "room": {"name": "Sala A"},
-      "hour": {"opening": "10:00", "closing": "11:00"},
-      "user": {"name": "Student"},
-      "state": "PENDING",
-      "created_at": "2025-03-10",
-    },
-    {
-      "id": 2,
-      "room": {"name": "Sala B"},
-      "hour": {"opening": "14:00", "closing": "15:00"},
-      "user": {"name": "Servent"},
-      "state": "PENDING",
-      "created_at": "2025-03-11",
-    },
-    {
-      "id": 3,
-      "room": {"name": "Sala C"},
-      "hour": {"opening": "09:00", "closing": "10:00"},
-      "user": {"name": "Professor"},
-      "state": "CANCELED",
-      "created_at": "2025-03-12",
-    },
-  ];
+  List<Booking> _bookings = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
   String _filterName = "";
   DateTime? _filterDate;
 
-  void _showConfirmationDialog(String action) {
+  final BookingService _bookingService = BookingService('http://localhost:3000');
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookings();
+  }
+
+  Future<void> _fetchBookings() async {
+    try {
+      final bookings = await _bookingService.fetchBookings();
+      setState(() {
+        _bookings = bookings;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erro ao carregar as reservas: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showConfirmationDialog(String action, int bookingId) {
     showDialog(
       context: context,
       builder: (context) {
@@ -51,7 +54,21 @@ class _BookingRequestsState extends State<BookingRequests> {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  if (action == "Aprovar") {
+                    await _bookingService.approveBooking(bookingId);
+                  } else if (action == "Rejeitar") {
+                    await _bookingService.rejectBooking(bookingId);
+                  }
+                  await _fetchBookings(); // Atualiza a lista após a ação
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Erro ao $action a reserva: $e')),
+                  );
+                }
+              },
               child: Text(action),
             ),
           ],
@@ -60,19 +77,19 @@ class _BookingRequestsState extends State<BookingRequests> {
     );
   }
 
-  String getSafeValue(Map<String, dynamic>? data, String key, {String defaultValue = "Desconhecido"}) {
+  String getSafeValue(dynamic data, String key, {String defaultValue = "Desconhecido"}) {
     return data != null && data[key] != null ? data[key].toString() : defaultValue;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredBookings = _mockBookings.where((booking) {
-      bool matchesName = _filterName.isEmpty || getSafeValue(booking["room"], "name").toLowerCase().contains(_filterName.toLowerCase());
-      bool matchesDate = _filterDate == null || booking["created_at"] == _filterDate!.toIso8601String().split("T")[0];
+    List<Booking> filteredBookings = _bookings.where((booking) {
+      bool matchesName = _filterName.isEmpty || booking.room.name.toLowerCase().contains(_filterName.toLowerCase());
+      bool matchesDate = _filterDate == null || booking.createdAt.split("T")[0] == _filterDate!.toIso8601String().split("T")[0];
       return matchesName && matchesDate;
     }).toList();
 
-    filteredBookings.sort((a, b) => a["state"] == "PENDING" ? -1 : 1);
+    filteredBookings.sort((a, b) => a.state == "PENDING" ? -1 : 1);
 
     return Scaffold(
       body: Column(
@@ -106,105 +123,108 @@ class _BookingRequestsState extends State<BookingRequests> {
             ),
           ),
           Expanded(
-            child: Container(
-              color: Colors.grey.shade200,
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16.0),
-                itemCount: filteredBookings.length,
-                itemBuilder: (context, index) {
-                  final booking = filteredBookings[index];
-                  Color statusColor;
+            child: BackgroundContainer(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _errorMessage != null
+                      ? Center(child: Text(_errorMessage!))
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(16.0),
+                          itemCount: filteredBookings.length,
+                          itemBuilder: (context, index) {
+                            final booking = filteredBookings[index];
+                            Color statusColor;
 
-                  switch (booking["state"]) {
-                    case "PENDING":
-                      statusColor = Colors.amber;
-                      break;
-                    case "APPROVED":
-                      statusColor = Colors.green;
-                      break;
-                    case "REJECTED":
-                    case "CANCELED":
-                      statusColor = Colors.red;
-                      break;
-                    default:
-                      statusColor = Colors.grey;
-                  }
+                            switch (booking.state) {
+                              case "PENDING":
+                                statusColor = Colors.amber;
+                                break;
+                              case "APPROVED":
+                                statusColor = Colors.green;
+                                break;
+                              case "REJECTED":
+                              case "CANCELED":
+                                statusColor = Colors.red;
+                                break;
+                              default:
+                                statusColor = Colors.grey;
+                            }
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${getSafeValue(booking["user"], "name")} - ${getSafeValue(booking["room"], "name")}",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text("Horário: ${getSafeValue(booking["hour"], "opening")} - ${getSafeValue(booking["hour"], "closing")}"),
-                          Text("Data: ${getSafeValue(booking, "created_at")}"),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Container(
                                 decoration: BoxDecoration(
-                                  color: statusColor,
-                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade300,
+                                      blurRadius: 8,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${getSafeValue(booking.user, "name")} - ${getSafeValue(booking.room, "name")}",
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text("Horário: ${getSafeValue(booking.hour, "opening")} - ${getSafeValue(booking.hour, "closing")}"),
+                                    Text("Data: ${booking.createdAt.split("T")[0]}"),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: BoxDecoration(
+                                            color: statusColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(booking.state.toUpperCase()),
+                                        const Spacer(),
+                                        if (booking.state != "CANCELED") ...[
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                                            onPressed: () => _showConfirmationDialog("Aprovar", booking.id),
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.check, color: Colors.black),
+                                                SizedBox(width: 4),
+                                                Text("Aprovar", style: TextStyle(color: Colors.black)),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                            onPressed: () => _showConfirmationDialog("Rejeitar", booking.id),
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.close, color: Colors.white),
+                                                SizedBox(width: 4),
+                                                Text("Rejeitar", style: TextStyle(color: Colors.white)),
+                                              ],
+                                            ),
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Text(booking["state"].toUpperCase()),
-                              const Spacer(),
-                              if (booking["state"] != "CANCELED") ...[
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                                  onPressed: () => _showConfirmationDialog("Aprovar"),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.check, color: Colors.black),
-                                      SizedBox(width: 4),
-                                      Text("Aprovar", style: TextStyle(color: Colors.black)),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                  onPressed: () => _showConfirmationDialog("Rejeitar"),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.close, color: Colors.white),
-                                      SizedBox(width: 4),
-                                      Text("Rejeitar", style: TextStyle(color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ]
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                            );
+                          },
+                        ),
             ),
           ),
         ],

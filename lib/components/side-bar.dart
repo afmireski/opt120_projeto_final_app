@@ -22,7 +22,8 @@ class SideBar extends StatelessWidget {
               Container(
                 color: const Color(0xFFFFD700),
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   children: [
                     const Text(
@@ -53,7 +54,7 @@ class SideBar extends StatelessWidget {
                 leading: const Icon(Icons.view_list_rounded),
                 title: const Text('Salas Cadastradas'),
                 onTap: () {
-                  onNavigate?.call(1); 
+                  onNavigate?.call(1);
                 },
               ),
               if (!isStudent) ...[
@@ -69,7 +70,7 @@ class SideBar extends StatelessWidget {
                 leading: const Icon(Icons.room_preferences_rounded),
                 title: const Text('Reservar Sala'),
                 onTap: () {
-                  // TODO: Adicionar navegação futura
+                  Navigator.of(context).pushNamed('/book');
                 },
               ),
             ],
@@ -89,7 +90,8 @@ class SideBar extends StatelessWidget {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text('Confirmar saída'),
-                      content: const Text('Tem certeza que deseja desconectar?'),
+                      content:
+                          const Text('Tem certeza que deseja desconectar?'),
                       actions: <Widget>[
                         TextButton(
                           child: const Text('Cancelar'),
@@ -101,10 +103,12 @@ class SideBar extends StatelessWidget {
                           child: const Text('Sim'),
                           onPressed: () {
                             // Limpa as informações do usuário e token no UserStore
-                            final userStore = Provider.of<UserStore>(context, listen: false);
+                            final userStore =
+                                Provider.of<UserStore>(context, listen: false);
                             userStore.clearUser(); // Limpa o usuário e token
 
-                            Navigator.of(context).pushReplacementNamed('/login'); // Redireciona para a tela de login
+                            Navigator.of(context).pushReplacementNamed(
+                                '/login'); // Redireciona para a tela de login
                           },
                         ),
                       ],

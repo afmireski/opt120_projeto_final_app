@@ -4,6 +4,7 @@ import '../components/custom-app-bar.dart';
 import 'home-with-bottom-bar.dart'; // Página que inclui o BottomBar
 import 'room/list-room.dart'; // Importa a página de salas cadastradas
 import 'room/create-room.dart'; // Importa a página de salas cadastradas
+import 'create-booking.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     HomeWithBottomBar(),
     ListRooms(), 
-    CreateRooms(), 
+    CreateBooking(),
   ];
 
   void _navigateToPage(int index) {

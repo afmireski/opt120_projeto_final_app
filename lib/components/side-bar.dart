@@ -70,7 +70,7 @@ class SideBar extends StatelessWidget {
                 leading: const Icon(Icons.room_preferences_rounded),
                 title: const Text('Reservar Sala'),
                 onTap: () {
-                  Navigator.of(context).pushNamed('/book');
+                  onNavigate?.call(2);
                 },
               ),
             ],

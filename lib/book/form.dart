@@ -18,7 +18,11 @@ class _BookForm extends State<BookForm> {
   Room? selectedRoom;
   TimeSlot? selectedSlot;
   DateTime? selectedDate;
-  int selectedWeekday = (DateTime.now().weekday % 7) + 1;
+  int selectedWeekday = DateTime.now().weekday;
+
+  final List<String> weekDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+  final List<String> months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
         providers: [
@@ -145,25 +149,50 @@ class _BookForm extends State<BookForm> {
                                         'Sem horários nesse dia da semana'),
                                   );
                                 }
-                                return ListView(
-                                  children: weekDaySlots
-                                      .map(
-                                        (e) => RadioListTile<int>(
-                                          groupValue: selectedSlotId,
-                                          onChanged: (b) {
-                                            if (selectedSlot != e) {
+                                return 
+                                Column(
+                                  children: [
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal, // Permite rolagem horizontal
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: List.generate(5, (index) {
+                                          return RadioListTile<int>(
+                                            title: Text(weekDays[index]),
+                                            value: index + 1,
+                                            groupValue: selectedWeekday,
+                                            onChanged: (value) {
                                               setState(() {
-                                                selectedSlot = e;
-                                                selectedDate = null;
+                                                selectedWeekday = value!;
+                                                selectedSlot = null;
                                               });
-                                            }
-                                          },
-                                          value: e.id ?? -1,
-                                          title: Text(
-                                              '${e.openingHour} - ${e.closingHour}'),
-                                        ),
-                                      )
-                                      .toList(),
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ListView(
+                                        children: weekDaySlots
+                                            .map(
+                                              (e) => RadioListTile<int>(
+                                                groupValue: selectedSlotId,
+                                                onChanged: (b) {
+                                                  if (selectedSlot != e) {
+                                                    setState(() {
+                                                      selectedSlot = e;
+                                                      selectedDate = null;
+                                                    });
+                                                  }
+                                                },
+                                                value: e.id ?? -1,
+                                                title: Text('${e.openingHour} - ${e.closingHour}'),
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ),
+                                  ],
                                 );
                               }
                               if (state is TimeSlotListLoading) {
@@ -178,53 +207,6 @@ class _BookForm extends State<BookForm> {
                           ),
                         ),
                         divider,
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: ColoredBox(
-                              color: Colors.black,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: selectedWeekday == 1
-                                        ? null
-                                        : () {
-                                            setState(() {
-                                              selectedSlot = null;
-                                              selectedWeekday--;
-                                            });
-                                          },
-                                    icon: const Icon(
-                                      Icons.arrow_back,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Expanded(
-                                      child: Text(
-                                    weekDays[selectedWeekday - 1],
-                                    style: const TextStyle(color: Colors.white),
-                                    textAlign: TextAlign.center,
-                                  )),
-                                  IconButton(
-                                    onPressed: selectedWeekday == 7
-                                        ? null
-                                        : () {
-                                            setState(() {
-                                              selectedSlot = null;
-                                              selectedWeekday++;
-                                            });
-                                          },
-                                    icon: const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                     BlocBuilder<BookBloc, BookState>(
@@ -244,12 +226,21 @@ class _BookForm extends State<BookForm> {
                           onPressed: () async {
                             DateTime? pickedDate = await showDatePicker(
                               context: context,
-                              selectableDayPredicate: (day) =>
-                                  ((day.weekday % 7) + 1) == selectedWeekday,
                               firstDate: DateTime.now(),
                               lastDate: DateTime.now().add(
                                 const Duration(days: 90),
                               ),
+                              selectableDayPredicate: (day) {
+                                if (day.weekday == DateTime.saturday || day.weekday == DateTime.sunday) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Por favor, selecione um dia útil (Segunda a Sexta).'),
+                                    ),
+                                  );
+                                  return false;
+                                }
+                                return true;
+                              },
                             );
                             if (pickedDate != null) {
                               setState(() {
@@ -342,7 +333,7 @@ class _BookForm extends State<BookForm> {
 
   String get datePickerButtonText {
     if (selectedDate != null) {
-      return '${selectedDate!.day} de ${months[selectedDate!.month]} de ${selectedDate!.year}';
+      return '${selectedDate!.day} de ${months[selectedDate!.month - 1]} de ${selectedDate!.year}';
     }
     return 'Selecionar dia';
   }
@@ -350,7 +341,6 @@ class _BookForm extends State<BookForm> {
   Widget get advanceButton {
     if (stackIndex == 2) {
       return BlocBuilder<BookBloc, BookState>(builder: (context, state) {
-        print(state);
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(

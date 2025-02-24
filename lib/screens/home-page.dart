@@ -47,12 +47,12 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Sala: ${booking.room.name}'),
+              Text('Sala: ${booking.room!.name}'),
               SizedBox(height: 8),
               Text(
-                  'Horário: ${booking.hour.opening} - ${booking.hour.closing}'),
+                  'Horário: ${booking.hour!.opening} - ${booking.hour!.closing}'),
               SizedBox(height: 8),
-              Text('Data: ${booking.createdAt.split("T")[0]}'),
+              Text('Data: ${booking.createdAt!.split("T")[0]}'),
             ],
           ),
           actions: [
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o popup de detalhes
                 _showCancelConfirmationDialog(
-                    context, booking.id); // Abre o diálogo de confirmação
+                    context, booking.id!); // Abre o diálogo de confirmação
               },
               child: Text(
                 'Cancelar Reserva',
@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        booking.room.name,
+                        booking.room!.name,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -183,8 +183,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        '${booking.hour.opening} - ${booking.hour.closing}',
-                        style: TextStyle(
+                        '${booking.hour!.opening.split(':').sublist(0, 2).join('h')} - ${booking.hour!.closing.split(':').sublist(0, 2).join('h')}',
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black87,
                         ),
@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(booking.room.name,
+                    Text(booking.room!.name,
                         style: TextStyle(fontSize: 16, color: Colors.black)),
                     Row(
                       children: [
@@ -251,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(width: 8),
-                        Text(booking.state,
+                        Text(booking.state!,
                             style: TextStyle(color: Colors.black87)),
                       ],
                     ),

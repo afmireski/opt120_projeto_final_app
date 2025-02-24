@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:produto_front/screens/create-booking.dart';
 import '../components/side-bar.dart';
 import '../components/custom-app-bar.dart';
 import 'home-with-bottom-bar.dart'; // Página que inclui o BottomBar
 import 'booking-requests.dart'; // Página que inclui o BottomBar
 import 'room/list-room.dart'; // Importa a página de salas cadastradas
 import 'room/create-room.dart'; // Importa a página de salas cadastradas
+import 'create-booking.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -21,6 +23,7 @@ class _MainScreenState extends State<MainScreen> {
     ListRooms(), 
     CreateRooms(), 
     BookingRequests(),
+    CreateBooking(),
   ];
 
   void _navigateToPage(int index) {

@@ -117,8 +117,8 @@ class _BookingRequestsState extends State<BookingRequests> {
   @override
   Widget build(BuildContext context) {
     List<Booking> filteredBookings = _bookings.where((booking) {
-      bool matchesName = _filterName.isEmpty || booking.room.name.toLowerCase().contains(_filterName.toLowerCase());
-      bool matchesDate = _filterDate == null || booking.createdAt.split("T")[0] == _filterDate!.toIso8601String().split("T")[0];
+      bool matchesName = _filterName.isEmpty || booking.room!.name.toLowerCase().contains(_filterName.toLowerCase());
+      bool matchesDate = _filterDate == null || booking.createdAt!.split("T")[0] == _filterDate!.toIso8601String().split("T")[0];
       return matchesName && matchesDate;
     }).toList();
 
@@ -210,7 +210,7 @@ class _BookingRequestsState extends State<BookingRequests> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text("Horário: ${getSafeValue(booking.hour, "opening")} - ${getSafeValue(booking.hour, "closing")}"),
-                                    Text("Data: ${booking.createdAt.split("T")[0]}"),
+                                    Text("Data: ${booking.createdAt!.split("T")[0]}"),
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
@@ -223,12 +223,12 @@ class _BookingRequestsState extends State<BookingRequests> {
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        Text(booking.state.toUpperCase()),
+                                        Text(booking.state!.toUpperCase()),
                                         const Spacer(),
-                                        if (booking.state != "CANCELED") ...[
+                                        if (booking.state != "APPROVED" || booking.state != "APPROVED") ...[
                                           ElevatedButton(
                                             style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                                            onPressed: () => _showConfirmationDialog("Aprovar", booking.id),
+                                            onPressed: () => _showConfirmationDialog("Aprovar", booking.id!),
                                             child: const Row(
                                               children: [
                                                 Icon(Icons.check, color: Colors.black),
@@ -240,7 +240,7 @@ class _BookingRequestsState extends State<BookingRequests> {
                                           const SizedBox(width: 8),
                                           ElevatedButton(
                                             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                            onPressed: () => _showConfirmationDialog("Rejeitar", booking.id),
+                                            onPressed: () => _showConfirmationDialog("Rejeitar", booking.id!),
                                             child: const Row(
                                               children: [
                                                 Icon(Icons.close, color: Colors.white),

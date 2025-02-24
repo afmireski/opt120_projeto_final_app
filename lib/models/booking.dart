@@ -6,36 +6,38 @@ import 'room.dart'; // Importando o modelo Room
 //------------------------------------------------
 
 class Booking {
-  final int id;
+  final int? id;
   final int roomId;
   final int hourId;
-  final int userId;
-  final String createdAt;
-  final String updatedAt;
+  final int? userId;
+  final String day;
+  final String? createdAt;
+  final String? updatedAt;
   final String? deletedAt;
-  final String state;
+  final String? state;
   final String? approvedAt;
   final String? rejectedAt;
   final String? canceledAt;
-  final Hour hour;
-  final Room room;
-  final User user;
+  final Hour? hour;
+  final Room? room;
+  final User? user;
 
   Booking({
-    required this.id,
+    this.id,
     required this.roomId,
     required this.hourId,
-    required this.userId,
-    required this.createdAt,
-    required this.updatedAt,
+    this.userId,
+    required this.day,
+    this.createdAt,
+    this.updatedAt,
     this.deletedAt,
-    required this.state,
+    this.state,
     this.approvedAt,
     this.rejectedAt,
     this.canceledAt,
-    required this.hour,
-    required this.room,
-    required this.user,
+    this.hour,
+    this.room,
+    this.user,
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class Booking {
       roomId: json['room_id'] ?? 0,
       hourId: json['hour_id'] ?? 0,
       userId: json['user_id'] ?? 0,
+      day: json['day'] ?? '',
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
       deletedAt: json['deleted_at'],
@@ -63,6 +66,7 @@ class Booking {
       'room_id': roomId,
       'hour_id': hourId,
       'user_id': userId,
+      'day': day,
       'created_at': createdAt,
       'updated_at': updatedAt,
       'deleted_at': deletedAt,
@@ -70,9 +74,6 @@ class Booking {
       'approved_at': approvedAt,
       'rejected_at': rejectedAt,
       'canceled_at': canceledAt,
-      'hour': hour.toJson(),
-      'room': room.toJson(),
-      'user': user.toJson(),
     };
   }
 }
@@ -82,11 +83,13 @@ class Booking {
 //------------------------------------------------
 
 class Hour {
+  final int id;
   final int weekDay;
   final String opening;
   final String closing;
 
   Hour({
+    required this.id,
     required this.weekDay,
     required this.opening,
     required this.closing,
@@ -94,6 +97,7 @@ class Hour {
 
   factory Hour.fromJson(Map<String, dynamic> json) {
     return Hour(
+      id: json['id'] ?? 0,
       weekDay: json['week_day'] ?? 0,
       opening: json['opening'] ?? '00:00:00',
       closing: json['closing'] ?? '00:00:00',

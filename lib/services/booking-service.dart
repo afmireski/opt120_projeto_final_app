@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/booking.dart';
+import '../models/room.dart';
 import '../stores/user-store.dart';
 
 class BookingService {
@@ -163,5 +164,61 @@ class BookingService {
     } else {
       throw Exception('Erro ao buscar as reservas: ${response.body}');
     }
+  }
+
+    /// Listar horários disponíveis para uma sala específica
+  Future<List<Hour>> listTimeSlotsFromRoom(Room room) async {
+    final url = Uri.parse('$baseUrl/api/rooms/${room.id}');
+
+    final String? token = UserStore().token;
+    if (token == null) {
+      throw Exception('Token não encontrado. Faça login novamente.');
+    }
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$token',
+      },
+    );
+
+    print('Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseJson = jsonDecode(response.body);
+      final List<dynamic> hoursRaw = responseJson['hours'];
+      return hoursRaw.map((e) => Hour.fromJson(e)).toList();
+    } else {
+      throw Exception('Erro ao buscar horários da sala: ${response.body}');
+    }
+  }
+
+  /// Cria uma nova reserva
+  Future<http.Response> book(Booking booking) async {
+    final url = Uri.parse('$baseUrl/api/bookings/new-intent');
+
+    final String? token = UserStore().token;
+    if (token == null) {
+      throw Exception('Token não encontrado. Faça login novamente.');
+    }
+
+    final Map<String, dynamic> data = {
+      'room_id': booking.roomId,
+      'hour_id': booking.hourId,
+      'date': booking.day,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$token',
+      },
+      body: jsonEncode(data),
+    );
+
+    return response; // Retorna a resposta completa
   }
 }

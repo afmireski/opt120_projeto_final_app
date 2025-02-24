@@ -78,8 +78,41 @@ class _BookingRequestsState extends State<BookingRequests> {
   }
 
   String getSafeValue(dynamic data, String key, {String defaultValue = "Desconhecido"}) {
-    return data != null && data[key] != null ? data[key].toString() : defaultValue;
+  if (data == null) {
+    return defaultValue;
   }
+
+  // Verifica se o objeto é um Map
+  if (data is Map) {
+    return data[key]?.toString() ?? defaultValue;
+  }
+
+  // Verifica se o objeto é uma instância de uma classe e acessa os campos diretamente
+  switch (key) {
+    case 'name':
+      return data.name?.toString() ?? defaultValue;
+    case 'email':
+      return data.email?.toString() ?? defaultValue;
+    case 'ra':
+      return data.ra?.toString() ?? defaultValue;
+    case 'role':
+      return data.role?.toString() ?? defaultValue;
+    case 'opening':
+      return data.opening?.toString() ?? defaultValue;
+    case 'closing':
+      return data.closing?.toString() ?? defaultValue;
+    case 'week_day':
+      return data.weekDay?.toString() ?? defaultValue;
+    case 'informations':
+      return data.informations?.toString() ?? defaultValue;
+    case 'opening_hour':
+      return data.openingHour?.toString() ?? defaultValue;
+    case 'closing_hour':
+      return data.closingHour?.toString() ?? defaultValue;
+    default:
+      return defaultValue;
+  }
+}
 
   @override
   Widget build(BuildContext context) {

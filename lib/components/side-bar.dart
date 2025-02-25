@@ -20,7 +20,6 @@ class SideBar extends StatelessWidget {
             children: [
               // Cabeçalho
               Container(
-                color: const Color(0xFFFFD700),
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
@@ -61,7 +60,7 @@ class SideBar extends StatelessWidget {
                   leading: const Icon(Icons.approval_rounded),
                   title: const Text('Aprovar Reservas'),
                   onTap: () {
-                    // TODO: Adicionar navegação futura
+                    onNavigate?.call(3);
                   },
                 ),
               ],
@@ -69,8 +68,8 @@ class SideBar extends StatelessWidget {
                 leading: const Icon(Icons.room_preferences_rounded),
                 title: const Text('Reservar Sala'),
                 onTap: () {
-                  // TODO: Adicionar navegação futura
-                },
+                    onNavigate?.call(4);
+                  },
               ),
             ],
           ),
